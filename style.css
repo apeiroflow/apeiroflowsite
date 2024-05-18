@@ -4,6 +4,7 @@ body {
     background-color: black;
     color: white;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
@@ -11,6 +12,7 @@ body {
 
 .container {
     text-align: center;
+    flex-grow: 1;
 }
 
 h1 {
@@ -20,7 +22,7 @@ h1 {
 
 p {
     font-size: 1.5em;
-    color: #5969ca; /* Dark matcha green color */
+    color: #5699ca; /* Dark matcha green color */
 }
 
 .abstract-images {
@@ -32,7 +34,7 @@ p {
 
 .shape {
     position: absolute;
-    background-color: #5969ca; /* Dark matcha green color */
+    background-color: #5699ca; /* Dark matcha green color */
     opacity: 0.8;
     animation: float 6s ease-in-out infinite;
 }
@@ -77,4 +79,44 @@ p {
     0% { transform: translateY(0); }
     50% { transform: translateY(-20px); }
     100% { transform: translateY(0); }
+}
+
+footer {
+    background-color: black;
+    padding: 20px;
+    text-align: center;
+}
+
+footer p {
+    margin: 0;
+    font-size: 1em;
+    color: white;
+}
+
+footer a {
+    color: #5699ca;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 2.5em;
+    }
+
+    p {
+        font-size: 1.2em;
+    }
+
+    .abstract-images {
+        height: 200px;
+    }
+
+    .shape1, .shape2, .shape3, .shape4 {
+        width: 70px;
+        height: 70px;
+    }
 }
