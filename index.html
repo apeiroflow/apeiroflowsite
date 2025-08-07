@@ -1,68 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title class="text-4xl md:text-5xl font-semibold pt-4 mb-2">Apeiroflow</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>Apeiroflow – Boundless Opportunities</title>
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-    }
+    body { margin:0; font-family: 'Segoe UI', sans-serif; color:#333; line-height:1.6; }
+    header { position: relative; height:60vh; background:#004085; color:white; display:flex; align-items:center; justify-content:center; text-align:center; overflow:hidden; }
+    header canvas { position:absolute; top:0; left:0; width:100%; height:100%; }
+    header .text { position:relative; z-index:1; padding:0 1rem; }
+    .section { padding:4rem 1rem; max-width:900px; margin:0 auto; }
+    .grid { display:grid; grid-template-columns:1fr; gap:2rem; }
+    @media(min-width:800px) { .grid { grid-template-columns:1fr 1fr; } }
+    footer { background:#f4f4f4; padding:2rem 1rem; text-align:center; font-size:0.9rem; color:#666; }
   </style>
 </head>
+<body>
+  <header>
+    <canvas id="hero"></canvas>
+    <div class="text">
+      <h1>Apeiroflow</h1>
+      <p>Investment & Advisory in AI‑Driven Transformation</p>
+    </div>
+  </header>
 
-<body class="bg-neutral-50 text-neutral-800">
-  <!-- Hero -->
-  <section class="flex flex-col justify-center items-center text-center px-4 pt-6">
-    <img src="/images/hero-image.png" alt="Apeiroflow" class="w-full max-w-xl rounded-lg">
-  </section>
-
-  <!-- About -->
-  <section class="py-10 px-4 max-w-4xl mx-auto">
-    <p class="text-lg leading-relaxed">Apeiroflow invests in businesses where technology and AI can reshape sectors. Apeiroflow has long-term horizon to allow transformative outcomes to emerge over time.</p>
-  </section>
-
-  <!-- Services -->
-  <section class="bg-white py-10 px-4 max-w-4xl mx-auto">
-
-    <div class="grid md:grid-cols-2 gap-8">
+  <section class="section">
+    <div class="grid">
       <div>
-        <h3 class="text-xl font-semibold mb-2">Capital Deployment</h3>
-        <p class="text-base">Direct investment into opportunities that use technology and AI to bring change and unlock value in overlooked or traditional industries.</p>
+        <h2>About Us</h2>
+        <p>Apeiroflow invests where technology and AI reshape sectors. We take a long‑term view, enabling transformative outcomes to emerge.</p>
       </div>
       <div>
-        <h3 class="text-xl font-semibold mb-2">Advisory</h3>
-        <p class="text-base">Provide strategic guidance with capital planning, operations, and long-term positioning.</p>
+        <h2>Capital Deployment</h2>
+        <p>We directly invest in AI‑powered opportunities that revolutionize overlooked or traditional industries.</p>
+      </div>
+      <div>
+        <h2>Advisory</h2>
+        <p>We provide strategic guidance in capital planning, operations, and long‑term positioning.</p>
       </div>
     </div>
   </section>
 
-  <!-- Contact -->
-  <section class="py-20 px-4 max-w-xl mx-auto">
-    <h2 class="text-3xl font-semibold mb-6">Contact</h2>
-    <form action="https://formsubmit.co/admin@apeiroflow.com" method="POST" class="space-y-4">
-      <input type="text" name="name" placeholder="Name" required class="w-full border border-neutral-300 px-4 py-2 rounded">
-      <input type="email" name="email" placeholder="Email" required class="w-full border border-neutral-300 px-4 py-2 rounded">
-      <textarea name="message" placeholder="Message" required class="w-full border border-neutral-300 px-4 py-2 rounded"></textarea>
-      <button type="submit" class="bg-neutral-900 text-white px-6 py-2 rounded hover:bg-neutral-800">Send</button>
-    </form>
-  </section>
-
-  <!-- Footer -->
-  <footer class="text-center text-sm text-neutral-500 py-6">
-    &copy; 2025 Apeiroflow. All rights reserved.
+  <footer class="section">
+    <p>© 2025 Apeiroflow. All rights reserved.</p>
   </footer>
+
+  <script>
+    const canvas = document.getElementById('hero');
+    const ctx = canvas.getContext('2d');
+    function resize() {
+      canvas.width = header.clientWidth;
+      canvas.height = header.clientHeight;
+    }
+    const header = document.querySelector('header');
+    window.addEventListener('resize', resize);
+    resize();
+
+    let t = 0;
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      const amp = canvas.height / 4;
+      const freq = 0.02;
+      ctx.moveTo(0, canvas.height / 2);
+      for (let x = 0; x < canvas.width; x++) {
+        const y = canvas.height / 2 + Math.sin(x * freq + t) * amp;
+        ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      t += 0.02;
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
 </body>
-
 </html>
-
-
-
-
-
-
-
