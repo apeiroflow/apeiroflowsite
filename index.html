@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Apeiroflow </title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -9,6 +10,17 @@
       --bg-color: #0d1117;
       --text-color: #f0f0f0;
       --accent-color: #888;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 1px, 1px);
+      white-space: nowrap;
+      border: 0;
     }
     body.light {
       --bg-color: #ffffff;
@@ -76,6 +88,11 @@
   width: 500px;
   max-width: 100%;
 }
+    input:focus, textarea:focus {
+      outline: 2px solid var(--accent-color);
+      outline-offset: 2px;
+      border-color: var(--accent-color);
+    }
     button {
   padding: 0.75rem;
   font-size: 1rem;
@@ -87,6 +104,10 @@
   cursor: pointer;
   border: none;
 }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
     footer {
       padding: 2rem;
       text-align: center;
@@ -105,6 +126,13 @@
       z-index: 10;
       font-family: 'Orbitron', sans-serif;
     }
+    .status { 
+      margin-top: 0.5rem; 
+      font-size: 0.95rem; 
+      min-height: 1.2em;
+    }
+    .status.success { color: #22c55e; }
+    .status.error { color: #ef4444; }
   </style>
 </head>
 <body>
@@ -132,12 +160,24 @@
       </div>
     </div>
 
-    <form action="https://formspree.io/f/your_form_id" method="POST">
+    <form id="contactForm" method="POST" novalidate>
       <h2 style="text-align:center">Get in Touch</h2>
-      <input type="text" name="name" placeholder="Your Name" required>
-      <input type="email" name="email" placeholder="Your Email" required>
-      <textarea name="message" placeholder="Your Message" required></textarea>
+      <label class="sr-only" for="name">Your Name</label>
+      <input id="name" type="text" name="name" placeholder="Your Name" required>
+
+      <label class="sr-only" for="email">Your Email</label>
+      <input id="email" type="email" name="email" placeholder="Your Email" required>
+
+      <label class="sr-only" for="message">Your Message</label>
+      <textarea id="message" name="message" placeholder="Your Message" rows="5" required></textarea>
+
+      <input type="hidden" name="_subject" value="New contact form submission" />
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="_template" value="table" />
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
+
       <button type="submit">Send Message</button>
+      <div id="formStatus" class="status" aria-live="polite"></div>
     </form>
   </section>
 
@@ -147,14 +187,30 @@
 
   <script>
     const toggleBtn = document.getElementById('toggleTheme');
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light');
+      toggleBtn.textContent = 'Light Mode';
+    }
     toggleBtn.onclick = () => {
       document.body.classList.toggle('light');
-      toggleBtn.textContent = document.body.classList.contains('light') ? 'Light Mode' : 'Dark Mode';
+      const isLight = document.body.classList.contains('light');
+      toggleBtn.textContent = isLight ? 'Light Mode' : 'Dark Mode';
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
     };
 
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
+    const mouse = { x: null, y: null, active: false };
+    let sparkles = [];
+    // Big Bang test feature (press 'B' to toggle)
+    let bigBangEnabled = true;
+    let lastBigBangMs = 0;
+    const bigBangCooldownMs = 12000;
+    let speedCap = 0.6;
+    const normalSpeedCap = 0.6;
+    let flashAlpha = 0;
 
     function resizeCanvas() {
       canvas.width = window.innerWidth;
@@ -164,33 +220,212 @@
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
+    window.addEventListener('keydown', (e) => {
+      if (e.key && e.key.toLowerCase() === 'b') {
+        bigBangEnabled = !bigBangEnabled;
+      }
+    });
+
     for (let i = 0; i < 60; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         r: Math.random() * 4 + 2,
-        dx: (Math.random() - 0.5) * 0.8,
-        dy: (Math.random() - 0.5) * 0.8
+        dx: (Math.random() - 0.5) * 0.35,
+        dy: (Math.random() - 0.5) * 0.35
       });
     }
 
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+      mouse.active = true;
+
+      // Light mode: leave a trail of subtle sparkles near the cursor
+      if (document.body.classList.contains('light') && Math.random() < 0.25) {
+        sparkles.push({
+          x: mouse.x + (Math.random() - 0.5) * 16,
+          y: mouse.y + (Math.random() - 0.5) * 16,
+          r: 2 + Math.random() * 2,
+          life: 1
+        });
+      }
+    });
+    canvas.addEventListener('mouseleave', () => { mouse.active = false; });
+
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const isLightMode = document.body.classList.contains('light');
+
+      // Optional flash overlay (fades)
+      if (!isLightMode && flashAlpha > 0) {
+        ctx.fillStyle = `rgba(255,255,255,${flashAlpha})`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        flashAlpha *= 0.9;
+      }
+
+      // Draw connections and build neighbor graph
+      const neighbors = Array.from({ length: particles.length }, () => []);
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const a = particles[i];
+          const b = particles[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < 120) {
+            const alpha = 1 - dist / 120;
+            ctx.strokeStyle = isLightMode ? `rgba(0,0,0,${alpha})` : `rgba(255,255,255,${alpha})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+            neighbors[i].push(j);
+            neighbors[j].push(i);
+          }
+        }
+      }
+
+      // Big Bang trigger: when graph is fully connected in dark mode, scatter
+      if (!isLightMode && bigBangEnabled && (Date.now() - lastBigBangMs > bigBangCooldownMs)) {
+        const n = neighbors.length;
+        if (n > 0) {
+          const visited = new Array(n).fill(false);
+          const stack = [0];
+          visited[0] = true;
+          let count = 1;
+          while (stack.length) {
+            const v = stack.pop();
+            for (const u of neighbors[v]) {
+              if (!visited[u]) { visited[u] = true; stack.push(u); count++; }
+            }
+          }
+          if (count === n) {
+            // Scatter outward from centroid
+            const cx = particles.reduce((s, p) => s + p.x, 0) / n;
+            const cy = particles.reduce((s, p) => s + p.y, 0) / n;
+            for (const p of particles) {
+              const vx = p.x - cx;
+              const vy = p.y - cy;
+              const len = Math.hypot(vx, vy) || 1;
+              const base = 1.6 + Math.random() * 0.8;
+              p.dx = (vx / len) * base;
+              p.dy = (vy / len) * base;
+            }
+            speedCap = 2.2; // temporarily allow faster motion
+            flashAlpha = 0.35; // quick flash for effect
+            lastBigBangMs = Date.now();
+          }
+        }
+      }
+
       particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255,255,255,0.2)';
-        ctx.fill();
+        // Cursor interaction: dark = gentle attraction, light = gentle repulsion
+        if (mouse.active) {
+          const coeff = isLightMode ? 0.0006 : 0.0005;
+          const ax = (isLightMode ? (p.x - mouse.x) : (mouse.x - p.x)) * coeff;
+          const ay = (isLightMode ? (p.y - mouse.y) : (mouse.y - p.y)) * coeff;
+          p.dx += ax;
+          p.dy += ay;
+        }
+
+        // Natural motion
+        p.dx *= 0.985; // friction to slow movement
+        p.dy *= 0.985;
+
+        // Cap max speed (adaptive)
+        const speed = Math.hypot(p.dx, p.dy);
+        const maxSpeed = speedCap;
+        if (speed > maxSpeed) {
+          p.dx = (p.dx / speed) * maxSpeed;
+          p.dy = (p.dy / speed) * maxSpeed;
+        }
 
         p.x += p.dx;
         p.y += p.dy;
 
+        // Soft bounds with bounce
         if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
         if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+
+        // Draw particle
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = isLightMode ? 'rgba(0,0,0,0.22)' : 'rgba(255,255,255,0.25)';
+        ctx.fill();
       });
+
+      // Draw sparkles (light mode only)
+      if (isLightMode && sparkles.length) {
+        for (let i = sparkles.length - 1; i >= 0; i--) {
+          const s = sparkles[i];
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 200, 80, ${s.life * 0.8})`;
+          ctx.fill();
+          s.life -= 0.03;
+          s.r += 0.02;
+          if (s.life <= 0) sparkles.splice(i, 1);
+        }
+      }
+
+      // Ease speed cap back to normal after a burst
+      speedCap += (normalSpeedCap - speedCap) * 0.02;
+
       requestAnimationFrame(animate);
     }
     animate();
+
+    // Contact form submission via AJAX to send email to contact@apeiroflow.com
+    const form = document.getElementById('contactForm');
+    const statusEl = document.getElementById('formStatus');
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        statusEl.textContent = '';
+        statusEl.className = 'status';
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        const originalLabel = submitBtn.textContent;
+        submitBtn.textContent = 'Sending…';
+
+        try {
+          const formData = new FormData(form);
+          const response = await fetch('https://formsubmit.co/ajax/contact@apeiroflow.com', {
+            method: 'POST',
+            headers: { 'Accept': 'application/json' },
+            body: formData
+          });
+          const status = response.status;
+          let data = {};
+          try { data = await response.json(); } catch {}
+
+          // Handle first-time verification flow or generic success on 2xx
+          if (status >= 200 && status < 300) {
+            const message = (data && data.message ? String(data.message) : '').toLowerCase();
+            if (message.includes('verify') || message.includes('verification')) {
+              statusEl.textContent = 'Please check contact@apeiroflow.com to verify FormSubmit once. After verifying, future messages will deliver.';
+            } else if (message.includes('web server')) {
+              statusEl.textContent = 'Open the site via http(s) (not a local file). It’s currently running at http://127.0.0.1:5173.';
+            } else {
+              statusEl.textContent = 'Thanks! We’ll get back to you shortly.';
+            }
+            statusEl.classList.add('success');
+            form.reset();
+          } else {
+            throw new Error('Non-2xx response');
+          }
+        } catch (err) {
+          statusEl.textContent = 'Sorry, something went wrong. Please email contact@apeiroflow.com.';
+          statusEl.classList.add('error');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalLabel;
+        }
+      });
+    }
   </script>
 </body>
 </html>
