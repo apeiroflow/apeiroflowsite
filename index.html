@@ -75,13 +75,6 @@
       margin: 0 auto;
       padding: 7rem 0 4rem;
     }
-    .hero-subhead {
-      font-size: 1.05rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 1.25rem;
-      opacity: 0.6;
-    }
     .hero-image {
       width: min(70vw, 680px);
       margin: 2rem auto 0;
@@ -93,152 +86,6 @@
       padding: 4.5rem 2rem;
       max-width: var(--layout-max-width);
       margin: auto;
-      display: grid;
-      gap: 4.5rem;
-    }
-    .kanban {
-      display: grid;
-      gap: 3rem;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      align-items: stretch;
-      background: transparent;
-      border: none;
-      border-radius: 0;
-      padding: 2rem 0;
-    }
-    .kanban-column {
-      background: transparent;
-      color: var(--foreground);
-      padding: 0 1.75rem;
-      border-radius: 0;
-      border: none;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      height: 100%;
-    }
-    .kanban-column + .kanban-column {
-      border-left: none;
-    }
-    .kanban-header {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: flex-start;
-      gap: 0.35rem;
-    }
-    .kanban-header h2 {
-      font-size: 1.35rem;
-      margin: 0;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .kanban-label {
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      background: transparent;
-      color: var(--muted-foreground);
-      border-radius: 0;
-      padding: 0;
-      white-space: nowrap;
-    }
-    .kanban-card {
-      background: transparent;
-      color: var(--foreground);
-      border-radius: 0;
-      padding: 0;
-      border: none;
-      text-align: left;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    .kanban-card p {
-      margin: 0 0 1rem;
-      font-size: 1rem;
-      opacity: 0.75;
-    }
-    .kanban-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: grid;
-      gap: 0.65rem;
-    }
-    .kanban-list li {
-      position: relative;
-      padding-left: 1.5rem;
-      font-size: 0.85rem;
-      color: var(--foreground);
-      opacity: 0.75;
-    }
-    .kanban-list li::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0.4rem;
-      width: 0.45rem;
-      height: 0.45rem;
-      border-radius: 999px;
-      background: var(--accent);
-    }
-
-    /* Kanban card hover states */
-    @media (hover: hover) {
-      .kanban-card {
-        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-        padding: 1.5rem;
-        border-left: 2px solid transparent;
-        border-radius: 0.5rem;
-      }
-      .kanban-card:hover {
-        background: rgba(15, 23, 42, 0.025);
-        border-left-color: var(--accent);
-      }
-      .kanban-card:hover p,
-      .kanban-card:hover .kanban-list li {
-        opacity: 0.95;
-      }
-    }
-
-    /* Kanban numbers */
-    .kanban-number {
-      font-size: 3.5rem;
-      font-weight: 700;
-      line-height: 1;
-      letter-spacing: -0.03em;
-      color: transparent;
-      -webkit-text-stroke: 1px rgba(15, 23, 42, 0.15);
-      margin-bottom: -0.5rem;
-      order: -1;
-      transition: all 0.35s ease;
-    }
-    .kanban-column:nth-child(1) .kanban-number {
-      -webkit-text-stroke-color: rgba(16, 185, 129, 0.2);
-    }
-    .kanban-column:nth-child(2) .kanban-number {
-      -webkit-text-stroke-color: rgba(59, 130, 246, 0.2);
-    }
-    .kanban-column:nth-child(3) .kanban-number {
-      -webkit-text-stroke-color: rgba(168, 85, 247, 0.2);
-    }
-    @media (hover: hover) {
-      .kanban-column:hover .kanban-number {
-        opacity: 0.2;
-      }
-      .kanban-column:nth-child(1):hover .kanban-number {
-        color: #10b981;
-        -webkit-text-stroke: 0;
-      }
-      .kanban-column:nth-child(2):hover .kanban-number {
-        color: #3b82f6;
-        -webkit-text-stroke: 0;
-      }
-      .kanban-column:nth-child(3):hover .kanban-number {
-        color: #a855f7;
-        -webkit-text-stroke: 0;
-      }
     }
 
     /* Grain texture overlay */
@@ -398,31 +245,6 @@
       letter-spacing: 0.15em;
     }
 
-    /* Custom select arrow */
-    select {
-      appearance: none;
-      cursor: pointer;
-    }
-
-    .select-wrapper {
-      position: relative;
-    }
-
-    .select-wrapper::after {
-      content: '↓';
-      position: absolute;
-      right: 0;
-      top: 0.5rem;
-      font-size: 0.7rem;
-      color: var(--accent);
-      pointer-events: none;
-      transition: transform 0.3s ease;
-    }
-
-    .select-wrapper:focus-within::after {
-      transform: rotate(180deg);
-    }
-
     /* Submit button */
     button[type="submit"] {
       padding: 1.25rem 2rem;
@@ -544,15 +366,6 @@
       }
       .section {
         padding: 3.5rem 1.5rem;
-        gap: 3.5rem;
-      }
-      .kanban {
-        gap: 2.5rem;
-        grid-template-columns: 1fr;
-        padding: 1.5rem 0;
-      }
-      .kanban-column {
-        padding: 0 1rem;
       }
       form {
         padding: 2.5rem 0;
@@ -598,23 +411,6 @@
       }
       .section {
         padding: 3rem 1rem;
-        gap: 3rem;
-      }
-      .kanban {
-        gap: 2rem;
-        padding: 1rem 0;
-      }
-      .kanban-column {
-        padding: 0 0.5rem;
-      }
-      .kanban-header h2 {
-        font-size: 1.2rem;
-      }
-      .kanban-label {
-        font-size: 0.65rem;
-      }
-      .kanban-number {
-        font-size: 2.5rem;
       }
       button,
       input,
@@ -650,10 +446,6 @@
       }
       .section {
         padding: 2.5rem 1rem;
-        gap: 2.5rem;
-      }
-      .kanban-column {
-        padding: 0;
       }
       /* Form small mobile adjustments */
       form::before {
@@ -676,61 +468,12 @@
     <div class="hero-backdrop"></div>
     <div class="hero-overlay"></div>
     <div class="hero-shell">
-      <div class="hero-subhead">Capital Deployment + AI Enablement + Advisory</div>
       <h1>Apeiroflow</h1>
     </div>
     <img class="hero-image" src="images/pixelchips.png" alt="">
   </header>
 
   <section class="section">
-    <div class="kanban" aria-label="Apeiroflow capabilities overview">
-      <div class="kanban-column">
-        <div class="kanban-header">
-          <div class="kanban-number">01</div>
-          <h2>Capital Deployment</h2>
-          <span class="kanban-label">Strategic</span>
-        </div>
-        <div class="kanban-card">
-          <p>Capital aligned to execution plans, not quick turnover.</p>
-          <ul class="kanban-list">
-            <li>Transparent use-of-funds tied to milestones.</li>
-            <li>Long-horizon support for overlooked markets.</li>
-            <li>Clarity on where money goes and why.</li>
-          </ul>
-        </div>
-      </div>
-      <div class="kanban-column">
-        <div class="kanban-header">
-          <div class="kanban-number">02</div>
-          <h2>AI Enablement</h2>
-          <span class="kanban-label">Operational Lift</span>
-        </div>
-        <div class="kanban-card">
-          <p>AI to unlock efficiency, insight, and new avenues of growth.</p>
-          <ul class="kanban-list">
-            <li>Automation, analytics, and decision support.</li>
-            <li>Operational intelligence across core functions.</li>
-            <li>Practical AI built into existing workflows.</li>
-          </ul>
-        </div>
-      </div>
-      <div class="kanban-column">
-        <div class="kanban-header">
-          <div class="kanban-number">03</div>
-          <h2>Advisory</h2>
-          <span class="kanban-label">Operating Excellence</span>
-        </div>
-        <div class="kanban-card">
-          <p>Operating clarity that keeps delivery consistent.</p>
-          <ul class="kanban-list">
-            <li>Gap analysis, planning and delivery frameworks.</li>
-            <li>Treasury, markets and liquidity management.</li>
-            <li>Process and systems built for stable scale.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
     <form id="contactForm" method="POST" novalidate>
       <div class="form-header">
         <h2 class="form-title">
@@ -748,19 +491,6 @@
           <div class="form-field">
             <input id="email" type="email" name="email" placeholder=" " required>
             <label for="email">Email<span class="colon">:</span></label>
-          </div>
-        </div>
-
-        <div class="form-field">
-          <div class="select-wrapper">
-            <select id="interest" name="interest" required>
-              <option value="" disabled selected></option>
-              <option value="capital-deployment">Capital Deployment</option>
-              <option value="ai-enablement">AI Enablement</option>
-              <option value="advisory">Advisory</option>
-              <option value="other">Other</option>
-            </select>
-            <label for="interest">Area of interest<span class="colon">:</span></label>
           </div>
         </div>
 
@@ -897,14 +627,6 @@
         }
       });
     }, observerOptions);
-
-    // Apply initial state and observe kanban columns
-    document.querySelectorAll('.kanban-column').forEach((el, i) => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(30px)';
-      el.style.transition = `opacity 0.6s ease ${i * 0.15}s, transform 0.6s ease ${i * 0.15}s`;
-      scrollObserver.observe(el);
-    });
 
     // Animate form on scroll
     const form = document.querySelector('form');
