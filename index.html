@@ -6,7 +6,7 @@
   <title>Apeiroflow </title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
   <style>
     :root {
       --background: #ffffff;
@@ -67,6 +67,20 @@
       position: relative;
       z-index: 1;
       letter-spacing: 0.04em;
+    }
+
+    /* Live clock */
+    .live-clock {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(1rem, 2.5vw, 1.35rem);
+      font-weight: 400;
+      color: var(--muted-foreground);
+      margin-top: 1rem;
+      letter-spacing: 0.05em;
+      opacity: 0.7;
+      position: relative;
+      z-index: 1;
+      font-feature-settings: 'tnum' 1, 'zero' 1;
     }
     .hero-shell {
       position: relative;
@@ -364,6 +378,10 @@
       .hero-subhead {
         font-size: 0.95rem;
       }
+      .live-clock {
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
+        margin-top: 0.75rem;
+      }
       .section {
         padding: 3.5rem 1.5rem;
       }
@@ -403,6 +421,10 @@
       .hero-subhead {
         font-size: 0.85rem;
         letter-spacing: 0.1em;
+      }
+      .live-clock {
+        font-size: clamp(0.85rem, 1.8vw, 1rem);
+        margin-top: 0.6rem;
       }
       .hero-image {
         width: min(85vw, 500px);
@@ -444,6 +466,10 @@
       .hero-subhead {
         font-size: 0.75rem;
       }
+      .live-clock {
+        font-size: clamp(0.8rem, 1.5vw, 0.95rem);
+        margin-top: 0.5rem;
+      }
       .section {
         padding: 2.5rem 1rem;
       }
@@ -469,6 +495,7 @@
     <div class="hero-overlay"></div>
     <div class="hero-shell">
       <h1>Apeiroflow</h1>
+      <div class="live-clock" id="liveClock" aria-label="Current time">00:00:00</div>
     </div>
     <img class="hero-image" src="images/pixelchips.png" alt="">
   </header>
@@ -586,6 +613,24 @@
         }
       });
     }
+  </script>
+  <script>
+    // Live clock - always running
+    (function() {
+      const clockEl = document.getElementById('liveClock');
+      if (!clockEl) return;
+
+      function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        clockEl.textContent = `${hours}:${minutes}:${seconds}`;
+      }
+
+      updateClock();
+      setInterval(updateClock, 1000);
+    })();
   </script>
   <script>
     const heroBackdrop = document.querySelector('.hero-backdrop');
