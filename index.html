@@ -682,5 +682,137 @@
       scrollObserver.observe(form);
     }
   </script>
+  <script>
+    // Cursor trail particle system
+    (function() {
+      // Check for reduced motion preference
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReducedMotion) return;
+
+      const canvas = document.getElementById('cursorCanvas');
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+      let mouseX = 0;
+      let mouseY = 0;
+      let lastMouseX = 0;
+      let lastMouseY = 0;
+
+      // Color palette - greens and teals
+      const colors = ['#10b981', '#14b8a6', '#059669', '#0d9488', '#34d399'];
+
+      // Resize canvas to full window
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      // Particle class
+      class Particle {
+        constructor(x, y) {
+          this.x = x;
+          this.y = y;
+          this.size = Math.random() * 2 + 2; // 2-4px square particles
+          this.color = colors[Math.floor(Math.random() * colors.length)];
+          this.opacity = Math.random() * 0.4 + 0.3; // 0.3-0.7 initial opacity
+          this.life = 1; // Life from 1 to 0
+          this.decay = Math.random() * 0.015 + 0.01; // Decay rate (approx 1 second)
+          // Slight drift velocity
+          this.vx = (Math.random() - 0.5) * 0.5;
+          this.vy = (Math.random() - 0.5) * 0.5;
+        }
+
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+          this.life -= this.decay;
+          this.opacity = this.life * 0.6; // Fade out
+        }
+
+        draw() {
+          ctx.save();
+          ctx.globalAlpha = this.opacity;
+          ctx.fillStyle = this.color;
+          ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+          ctx.restore();
+        }
+
+        isDead() {
+          return this.life <= 0;
+        }
+      }
+
+      // Track mouse movement
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        // Calculate distance moved
+        const dx = mouseX - lastMouseX;
+        const dy = mouseY - lastMouseY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        // Spawn particles based on movement (more particles for faster movement)
+        const particleCount = Math.min(Math.floor(distance / 8), 5) + 1;
+
+        for (let i = 0; i < particleCount; i++) {
+          // Add slight random offset to particle position
+          const offsetX = (Math.random() - 0.5) * 6;
+          const offsetY = (Math.random() - 0.5) * 6;
+          particles.push(new Particle(mouseX + offsetX, mouseY + offsetY));
+        }
+
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
+      });
+
+      // Also spawn particles on touch devices
+      document.addEventListener('touchmove', (e) => {
+        const touch = e.touches[0];
+        mouseX = touch.clientX;
+        mouseY = touch.clientY;
+
+        for (let i = 0; i < 3; i++) {
+          const offsetX = (Math.random() - 0.5) * 6;
+          const offsetY = (Math.random() - 0.5) * 6;
+          particles.push(new Particle(mouseX + offsetX, mouseY + offsetY));
+        }
+
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
+      }, { passive: true });
+
+      // Animation loop
+      function animate() {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Update and draw particles
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.update();
+          p.draw();
+
+          // Remove dead particles
+          if (p.isDead()) {
+            particles.splice(i, 1);
+          }
+        }
+
+        // Limit max particles for performance
+        if (particles.length > 200) {
+          particles = particles.slice(-200);
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      // Start animation
+      animate();
+    })();
+  </script>
 </body>
 </html>
