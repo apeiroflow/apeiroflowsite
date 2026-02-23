@@ -81,11 +81,6 @@
       display: block;
       border-radius: 1.5rem;
       box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
-      will-change: transform;
-    }
-    /* Smooth return to center when mouse leaves hero section */
-    .hero:not(:hover) .hero-image {
-      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
     .section {
       padding: 4.5rem 2rem;
@@ -104,17 +99,6 @@
       z-index: 9999;
       opacity: 0.035;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    }
-
-    /* Cursor trail canvas */
-    .cursor-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 1;
     }
 
     /* Reduced motion */
@@ -478,7 +462,6 @@
   </style>
 </head>
 <body>
-  <canvas class="cursor-canvas" id="cursorCanvas"></canvas>
   <div class="grain-overlay"></div>
 
   <header class="hero">
@@ -627,53 +610,6 @@
       if (heroOverlay) heroOverlay.style.opacity = '0';
       if (heroBackdrop) heroBackdrop.style.opacity = '0.9';
     }
-  </script>
-  <script>
-    // Mouse-movement parallax effect for hero image
-    (function() {
-      const heroSection = document.querySelector('.hero');
-      const heroImage = document.querySelector('.hero-image');
-      if (!heroSection || !heroImage) return;
-
-      // Check for reduced motion preference
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (prefersReducedMotion) return;
-
-      let mouseX = 0, mouseY = 0;
-      let currentX = 0, currentY = 0;
-      const maxMove = 15; // Maximum pixels to move in any direction
-      const lerpFactor = 0.1; // Smooth easing (lower = smoother/slower)
-
-      // Track mouse position relative to viewport center
-      document.addEventListener('mousemove', (e) => {
-        // Normalize to -1 to 1 range from viewport center
-        mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-        mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-      });
-
-      // Reset target when mouse leaves the hero section
-      heroSection.addEventListener('mouseleave', () => {
-        mouseX = 0;
-        mouseY = 0;
-      });
-
-      // Animation loop with smooth lerp easing
-      function animate() {
-        // Linear interpolation for smooth movement
-        currentX += (mouseX * maxMove - currentX) * lerpFactor;
-        currentY += (mouseY * maxMove - currentY) * lerpFactor;
-
-        // Apply transform only when hovering hero section
-        if (heroSection.matches(':hover')) {
-          heroImage.style.transform = `translate(${currentX.toFixed(2)}px, ${currentY.toFixed(2)}px)`;
-        }
-
-        requestAnimationFrame(animate);
-      }
-
-      // Start the animation loop
-      animate();
-    })();
   </script>
   <script>
     // Scroll-triggered animations using Intersection Observer
