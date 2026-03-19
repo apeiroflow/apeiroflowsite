@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Projects | Apeiroflow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #0a0a0f;
+      --bg-card: #111118;
+      --bg-card-hover: #18181f;
+      --fg: #f0f0f5;
+      --fg-muted: #71717a;
+      --accent: #10b981;
+      --accent-glow: rgba(16, 185, 129, 0.4);
+      --border: rgba(255, 255, 255, 0.06);
+      --border-hover: rgba(255, 255, 255, 0.12);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      background: var(--bg-deep);
+      color: var(--fg);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grain texture */
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    /* Background gradient mesh */
+    .bg-mesh {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 40%, rgba(16, 185, 129, 0.08), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 60%, rgba(99, 102, 241, 0.06), transparent),
+        radial-gradient(ellipse 50% 50% at 50% 100%, rgba(16, 185, 129, 0.05), transparent);
+    }
+
+    /* Floating orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 {
+      width: 400px;
+      height: 400px;
+      background: rgba(16, 185, 129, 0.15);
+      top: -100px;
+      right: -100px;
+      animation: float1 20s ease-in-out infinite;
+    }
+    .orb-2 {
+      width: 300px;
+      height: 300px;
+      background: rgba(99, 102, 241, 0.1);
+      bottom: -50px;
+      left: -50px;
+      animation: float2 25s ease-in-out infinite;
+    }
+
+    @keyframes float1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(-50px, 50px) scale(1.1); }
+      66% { transform: translate(30px, -30px) scale(0.95); }
+    }
+    @keyframes float2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(40px, -40px) scale(1.05); }
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to bottom, var(--bg-deep), transparent);
+      backdrop-filter: blur(10px);
+    }
+
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--fg);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--fg-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: color 0.3s ease;
+      position: relative;
+    }
+
+    .nav-link:hover {
+      color: var(--fg);
+    }
+
+    .nav-link.active {
+      color: var(--accent);
+    }
+
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 1px;
+    }
+
+    /* Password Gate */
+    .gate {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-deep);
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    .gate.unlocked {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .gate-content {
+      text-align: center;
+      max-width: 420px;
+      padding: 2rem;
+    }
+
+    .gate-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 2rem;
+      position: relative;
+    }
+
+    .gate-icon-ring {
+      position: absolute;
+      inset: 0;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      animation: ring-pulse 3s ease-in-out infinite;
+    }
+
+    .gate-icon-ring:nth-child(2) {
+      animation-delay: 0.5s;
+    }
+
+    .gate-icon-ring:nth-child(3) {
+      animation-delay: 1s;
+    }
+
+    @keyframes ring-pulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.2); opacity: 0; }
+    }
+
+    .gate-icon svg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 32px;
+      height: 32px;
+      stroke: var(--accent);
+    }
+
+    .gate-title {
+      font-size: 2rem;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .gate-subtitle {
+      color: var(--fg-muted);
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+    }
+
+    .gate-input-wrap {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .gate-input {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--fg);
+      letter-spacing: 0.2em;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .gate-input::placeholder {
+      color: var(--fg-muted);
+      letter-spacing: 0.1em;
+    }
+
+    .gate-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .gate-input.error {
+      border-color: #ef4444;
+      animation: shake 0.5s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+
+    .gate-btn {
+      width: 100%;
+      padding: 1rem;
+      background: var(--accent);
+      color: var(--bg-deep);
+      border: none;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gate-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+
+    .gate-btn:hover::before {
+      transform: translateX(100%);
+    }
+
+    .gate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 40px var(--accent-glow);
+    }
+
+    .gate-error {
+      color: #ef4444;
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .gate-error.visible {
+      opacity: 1;
+    }
+
+    /* Main Content */
+    .main {
+      position: relative;
+      z-index: 1;
+      padding: 8rem 2rem 4rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
+    }
+
+    .main.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Page Header */
+    .page-header {
+      margin-bottom: 4rem;
+      text-align: center;
+    }
+
+    .page-title {
+      font-size: clamp(3rem, 8vw, 5rem);
+      font-weight: 300;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--fg) 0%, var(--fg-muted) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-desc {
+      color: var(--fg-muted);
+      font-size: 1.1rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* Projects Grid */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+
+    /* Project Card - 3D Perspective */
+    .project-card {
+      position: relative;
+      background: var(--bg-card);
+      border-radius: 20px;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      cursor: pointer;
+    }
+
+    .project-card:hover {
+      transform: translateY(-8px) rotateX(2deg);
+      box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        0 0 0 1px var(--border-hover);
+    }
+
+    /* Shimmer border effect */
+    .project-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      padding: 1px;
+      background: linear-gradient(
+        135deg,
+        transparent 0%,
+        rgba(16, 185, 129, 0.3) 50%,
+        transparent 100%
+      );
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .project-card:hover::before {
+      opacity: 1;
+      animation: shimmer 2s linear infinite;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    /* Spotlight effect */
+    .card-spotlight {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(16, 185, 129, 0.1),
+        transparent 40%
+      );
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .project-card:hover .card-spotlight {
+      opacity: 1;
+    }
+
+    .card-image-wrap {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+    }
+
+    .card-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .project-card:hover .card-image {
+      transform: scale(1.05);
+    }
+
+    .card-image-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(10, 10, 15, 0.8) 100%
+      );
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      padding: 0.35rem 0.75rem;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      z-index: 2;
+    }
+
+    .card-content {
+      position: relative;
+      z-index: 2;
+      padding: 1.5rem 1.5rem 1.5rem 1.6rem;
+      overflow: visible;
+    }
+
+    .card-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--fg-muted);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.1em;
+    }
+
+    .card-title {
+      font-size: 1.35rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0;
+    }
+
+    .card-desc {
+      color: var(--fg-muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-tag {
+      padding: 0.25rem 0.6rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: var(--fg-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .card-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: gap 0.3s ease;
+    }
+
+    .card-link:hover {
+      gap: 0.75rem;
+    }
+
+    .card-link svg {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.3s ease;
+    }
+
+    .card-link:hover svg {
+      transform: translateX(2px);
+    }
+
+    .card-year {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--fg-muted);
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 2rem;
+    }
+
+    .page-btn {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--fg-muted);
+      font-size: 0.9rem;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border-hover);
+      color: var(--fg);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .page-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg-deep);
+    }
+
+    .page-ellipsis {
+      color: var(--fg-muted);
+      padding: 0 0.5rem;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--fg-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header {
+        padding: 1rem 1.5rem;
+      }
+
+      .nav-links {
+        gap: 1.25rem;
+      }
+
+      .main {
+        padding: 7rem 1.25rem 3rem;
+      }
+
+      .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .page-header {
+        margin-bottom: 2.5rem;
+      }
+
+      .card-image-wrap {
+        height: 180px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header {
+        padding: 1rem;
+      }
+
+      .main {
+        padding: 6rem 1rem 2rem;
+      }
+
+      .gate-content {
+        padding: 1.5rem;
+      }
+
+      .gate-title {
+        font-size: 1.5rem;
+      }
+
+      .page-title {
+        font-size: 2.5rem;
+      }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain"></div>
+  <div class="bg-mesh"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- Password Gate -->
+  <div class="gate" id="gate">
+    <div class="gate-content">
+      <div class="gate-icon">
+        <div class="gate-icon-ring"></div>
+        <div class="gate-icon-ring"></div>
+        <div class="gate-icon-ring"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </div>
+      <h1 class="gate-title">Private Access</h1>
+      <p class="gate-subtitle">Enter the password to view projects</p>
+      <div class="gate-input-wrap">
+        <input type="password" class="gate-input" id="passwordInput" placeholder="PASSWORD" autocomplete="off">
+      </div>
+      <button class="gate-btn" id="unlockBtn">Unlock</button>
+      <p class="gate-error" id="gateError">Incorrect password. Try again.</p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <a href="index.html" class="logo">
+      <span class="logo-dot"></span>
+      Apeiroflow
+    </a>
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="projects.html" class="nav-link active">Projects</a>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main" id="main">
+    <header class="page-header">
+      <h1 class="page-title">Projects</h1>
+      <p class="page-desc">A curated selection of work spanning product design, engineering, and creative experiments.</p>
+    </header>
+
+    <div class="projects-grid" id="projectsGrid">
+      <!-- Projects injected by JS -->
+    </div>
+
+    <div class="pagination" id="pagination">
+      <!-- Pagination injected by JS -->
+    </div>
+
+    <footer class="footer">
+      <p>&copy; 2026 Apeiroflow.</p>
+    </footer>
+  </main>
+
+  <script>
+    // === PASSWORD GATE ===
+    const CORRECT_PASSWORD = 'ape1234!';
+    const gate = document.getElementById('gate');
+    const passwordInput = document.getElementById('passwordInput');
+    const unlockBtn = document.getElementById('unlockBtn');
+    const gateError = document.getElementById('gateError');
+    const mainContent = document.getElementById('main');
+
+    function unlock() {
+      gate.classList.add('unlocked');
+      mainContent.classList.add('visible');
+      sessionStorage.setItem('projectsUnlocked', 'true');
+      initProjects();
+    }
+
+    function checkPassword() {
+      if (passwordInput.value === CORRECT_PASSWORD) {
+        unlock();
+      } else {
+        passwordInput.classList.add('error');
+        gateError.classList.add('visible');
+        setTimeout(() => {
+          passwordInput.classList.remove('error');
+        }, 500);
+      }
+    }
+
+    unlockBtn.addEventListener('click', checkPassword);
+    passwordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') checkPassword();
+    });
+    passwordInput.addEventListener('input', () => {
+      gateError.classList.remove('visible');
+    });
+
+    // Check if already unlocked this session
+    if (sessionStorage.getItem('projectsUnlocked') === 'true') {
+      unlock();
+    }
+
+    // === PROJECTS DATA ===
+    const projects = [
+      {
+        id: 1,
+        title: 'Gaming Fund Dashboard',
+        description: 'Portfolio management and analytics platform for tracking gaming industry investments, fund performance, and market trends.',
+        image: 'https://chartis-dashboard.vercel.app/',
+        tags: ['React', 'D3.js', 'Node.js'],
+        year: '2026',
+        link: 'https://chartis-dashboard.vercel.app/'
+      },
+      {
+        id: 2,
+        title: 'Quantum Interface',
+        description: 'Experimental UI exploring quantum-inspired animations and morphing geometries with WebGL shaders and generative patterns.',
+        image: 'https://picsum.photos/seed/quantum/800/600',
+        tags: ['Three.js', 'GLSL', 'Canvas'],
+        year: '2025',
+        link: '#'
+      },
+      {
+        id: 3,
+        title: 'Neural Commerce',
+        description: 'AI-powered e-commerce platform with personalized recommendations, visual search, and intelligent inventory management.',
+        image: 'https://picsum.photos/seed/neural/800/600',
+        tags: ['Next.js', 'OpenAI', 'PostgreSQL'],
+        year: '2025',
+        link: '#'
+      },
+      {
+        id: 4,
+        title: 'Flux Creative Studio',
+        description: 'Portfolio site for a creative agency featuring smooth page transitions, magnetic cursor effects, and case study showcases.',
+        image: 'https://picsum.photos/seed/flux/800/600',
+        tags: ['GSAP', 'Barba.js', 'SCSS'],
+        year: '2025',
+        link: '#'
+      },
+      {
+        id: 5,
+        title: 'Vertex Protocol',
+        description: 'DeFi trading interface with real-time order books, portfolio tracking, and cross-chain asset management.',
+        image: 'https://picsum.photos/seed/vertex/800/600',
+        tags: ['Web3', 'Solidity', 'React'],
+        year: '2024',
+        link: '#'
+      },
+      {
+        id: 6,
+        title: 'Prism Analytics',
+        description: 'Business intelligence tool with drag-and-drop report builder, automated insights, and team collaboration features.',
+        image: 'https://picsum.photos/seed/prism/800/600',
+        tags: ['Vue.js', 'Python', 'Redis'],
+        year: '2024',
+        link: '#'
+      },
+      {
+        id: 7,
+        title: 'Echo Social',
+        description: 'Privacy-focused social platform with end-to-end encryption, ephemeral content, and decentralized identity.',
+        image: 'https://picsum.photos/seed/echo/800/600',
+        tags: ['React Native', 'Rust', 'IPFS'],
+        year: '2024',
+        link: '#'
+      },
+      {
+        id: 8,
+        title: 'Meridian Maps',
+        description: 'Interactive mapping application with custom vector tiles, real-time traffic, and location-based storytelling.',
+        image: 'https://picsum.photos/seed/meridian/800/600',
+        tags: ['Mapbox', 'Turf.js', 'Node.js'],
+        year: '2024',
+        link: '#'
+      },
+      {
+        id: 9,
+        title: 'Catalyst Labs',
+        description: 'Innovation platform for teams to brainstorm, prototype, and validate ideas with AI-assisted synthesis.',
+        image: 'https://picsum.photos/seed/catalyst/800/600',
+        tags: ['TypeScript', 'tRPC', 'Prisma'],
+        year: '2023',
+        link: '#'
+      },
+      {
+        id: 10,
+        title: 'Nova Design System',
+        description: 'Comprehensive component library with accessibility-first approach, dark mode, and extensive documentation.',
+        image: 'https://picsum.photos/seed/nova/800/600',
+        tags: ['React', 'Storybook', 'Figma'],
+        year: '2023',
+        link: '#'
+      },
+      {
+        id: 11,
+        title: 'Zenith CRM',
+        description: 'Modern customer relationship platform with pipeline visualization, automated workflows, and smart insights.',
+        image: 'https://picsum.photos/seed/zenith/800/600',
+        tags: ['Next.js', 'GraphQL', 'Stripe'],
+        year: '2023',
+        link: '#'
+      },
+      {
+        id: 12,
+        title: 'Orbit Launcher',
+        description: 'Productivity launcher app with plugin ecosystem, keyboard-driven navigation, and custom themes.',
+        image: 'https://picsum.photos/seed/orbit/800/600',
+        tags: ['Electron', 'React', 'SQLite'],
+        year: '2023',
+        link: '#'
+      }
+    ];
+
+    const PROJECTS_PER_PAGE = 9;
+    let currentPage = 1;
+
+    function renderProjects() {
+      const grid = document.getElementById('projectsGrid');
+      const start = (currentPage - 1) * PROJECTS_PER_PAGE;
+      const end = start + PROJECTS_PER_PAGE;
+      const pageProjects = projects.slice(start, end);
+
+      grid.innerHTML = pageProjects.map((project, index) => `
+        <article class="project-card" style="animation: fadeInUp 0.5s ease ${index * 0.1}s both">
+          <div class="card-spotlight"></div>
+          ${project.badge ? `<span class="card-badge">${project.badge}</span>` : ''}
+          <div class="card-image-wrap">
+            ${project.link.includes('vercel.app') ?
+              `<iframe src="${project.link}" class="card-image" style="pointer-events:none;border:none;" loading="lazy"></iframe>` :
+              `<img class="card-image" src="${project.image}" alt="${project.title}" loading="lazy">`
+            }
+            <div class="card-image-overlay"></div>
+          </div>
+          <div class="card-content">
+            <p class="card-number">${String(project.id).padStart(2, '0')}</p>
+            <h3 class="card-title">${project.title}</h3>
+            <p class="card-desc">${project.description}</p>
+            <div class="card-tags">
+              ${project.tags.map(tag => `<span class="card-tag">${tag}</span>`).join('')}
+            </div>
+            <div class="card-footer">
+              <a href="${project.link}" target="_blank" rel="noopener" class="card-link">
+                View Project
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="7" y1="17" x2="17" y2="7"></line>
+                  <polyline points="7 7 17 7 17 17"></polyline>
+                </svg>
+              </a>
+              <span class="card-year">${project.year}</span>
+            </div>
+          </div>
+        </article>
+      `).join('');
+
+      // Add spotlight effect listeners
+      document.querySelectorAll('.project-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = ((e.clientX - rect.left) / rect.width) * 100;
+          const y = ((e.clientY - rect.top) / rect.height) * 100;
+          card.style.setProperty('--mouse-x', `${x}%`);
+          card.style.setProperty('--mouse-y', `${y}%`);
+        });
+      });
+
+      renderPagination();
+    }
+
+    function renderPagination() {
+      const pagination = document.getElementById('pagination');
+      const totalPages = Math.ceil(projects.length / PROJECTS_PER_PAGE);
+
+      if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+      }
+
+      let html = `
+        <button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+      `;
+
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+      }
+
+      html += `
+        <button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      `;
+
+      pagination.innerHTML = html;
+    }
+
+    function changePage(page) {
+      const totalPages = Math.ceil(projects.length / PROJECTS_PER_PAGE);
+      if (page < 1 || page > totalPages) return;
+      currentPage = page;
+      renderProjects();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function initProjects() {
+      // Add fadeInUp animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `;
+      document.head.appendChild(style);
+      renderProjects();
+    }
+  </script>
+</body>
+</html>

@@ -37,6 +37,72 @@
       color: var(--foreground);
       font-family: 'Space Grotesk', system-ui, sans-serif;
     }
+
+    /* Site Navigation */
+    .site-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.95), rgba(255,255,255,0.8));
+      backdrop-filter: blur(10px);
+    }
+    .nav-logo {
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--foreground);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .nav-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: nav-pulse 2s ease-in-out infinite;
+    }
+    @keyframes nav-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.85); }
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    .nav-link {
+      color: var(--muted-foreground);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: color 0.3s ease;
+      position: relative;
+    }
+    .nav-link:hover {
+      color: var(--foreground);
+    }
+    .nav-link.active {
+      color: var(--accent);
+    }
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 1px;
+    }
     header.hero {
       position: relative;
       min-height: 90vh;
@@ -73,7 +139,7 @@
       z-index: 1;
       max-width: 640px;
       margin: 0 auto;
-      padding: 7rem 0 4rem;
+      padding: 8rem 0 4rem;
     }
     .hero-image {
       width: min(70vw, 680px);
@@ -367,12 +433,18 @@
 
     /* Tablet */
     @media (max-width: 768px) {
+      .site-nav {
+        padding: 1rem 1.5rem;
+      }
+      .nav-links {
+        gap: 1.25rem;
+      }
       header.hero {
         min-height: 80vh;
         padding: 0 1.5rem 3rem;
       }
       .hero-shell {
-        padding: 5rem 0 3rem;
+        padding: 6rem 0 3rem;
       }
       h1 {
         font-size: clamp(2.25rem, 6vw, 4rem);
@@ -405,13 +477,22 @@
 
     /* Mobile */
     @media (max-width: 640px) {
+      .site-nav {
+        padding: 1rem;
+      }
+      .nav-links {
+        gap: 1rem;
+      }
+      .nav-link {
+        font-size: 0.85rem;
+      }
       header.hero {
         min-height: 75vh;
         padding: 0 1rem 2rem;
       }
       .hero-shell {
         max-width: 100%;
-        padding: 4rem 0 2rem;
+        padding: 5rem 0 2rem;
       }
       h1 {
         font-size: clamp(2rem, 5.5vw, 3rem);
@@ -480,6 +561,17 @@
 <body>
   <canvas class="cursor-canvas" id="cursorCanvas"></canvas>
   <div class="grain-overlay"></div>
+
+  <nav class="site-nav">
+    <a href="index.html" class="nav-logo">
+      <span class="nav-dot"></span>
+      Apeiroflow
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="projects.html" class="nav-link">Projects</a>
+    </div>
+  </nav>
 
   <header class="hero">
     <div class="hero-backdrop"></div>
