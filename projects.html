@@ -939,7 +939,9 @@
           <div class="card-spotlight"></div>
           ${project.badge ? `<span class="card-badge">${project.badge}</span>` : ''}
           <div class="card-image-wrap">
-            ${(project.link.includes('vercel.app') || project.link.includes('railway.app')) ?
+            ${(project.image.includes('picsum') || project.image.includes('unsplash') || project.image.includes('http')) ?
+              `<img class="card-image" src="${project.image}" alt="${project.title}" loading="lazy">` :
+              (project.link.includes('vercel.app') || project.link.includes('railway.app')) ?
               `<iframe src="${project.link}" class="card-image" style="pointer-events:none;border:none;" loading="lazy"></iframe>` :
               `<img class="card-image" src="${project.image}" alt="${project.title}" loading="lazy">`
             }
