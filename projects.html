@@ -837,7 +837,7 @@
         id: 5,
         title: 'REEX',
         description: 'B2B rare earth marketplace connecting buyers and sellers with Certificate of Analysis (COA) verification, transaction management, and spot & offtake agreement workflows.',
-        image: 'https://images.unsplash.com/photo-1518709766631-a6a7f45921c3?w=800&h=600&fit=crop',
+        image: 'https://images.unsplash.com/photo-1595437193398-f24279553f4f?w=800&h=600&fit=crop',
         tags: ['React', 'TanStack Start', 'Supabase', 'Inngest'],
         year: '2026',
         link: 'https://reex-xecc.vercel.app/'
@@ -939,7 +939,7 @@
           <div class="card-spotlight"></div>
           ${project.badge ? `<span class="card-badge">${project.badge}</span>` : ''}
           <div class="card-image-wrap">
-            ${(project.image.includes('picsum') || project.image.includes('unsplash') || project.image.includes('http')) ?
+            ${(project.image.includes('picsum') || project.image.includes('unsplash')) ?
               `<img class="card-image" src="${project.image}" alt="${project.title}" loading="lazy">` :
               (project.link.includes('vercel.app') || project.link.includes('railway.app')) ?
               `<iframe src="${project.link}" class="card-image" style="pointer-events:none;border:none;" loading="lazy"></iframe>` :
