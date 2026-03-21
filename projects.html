@@ -826,12 +826,12 @@
       },
       {
         id: 4,
-        title: 'Quantum Interface',
-        description: 'Experimental UI exploring quantum-inspired animations and morphing geometries with WebGL shaders and generative patterns.',
-        image: 'https://picsum.photos/seed/quantum/800/600',
-        tags: ['Three.js', 'GLSL', 'Canvas'],
-        year: '2025',
-        link: '#'
+        title: 'Voice Studio',
+        description: 'AI-powered voice cloning studio for creating and customizing your own unique voices using advanced text-to-speech technology.',
+        image: 'https://tts-twelve-production.up.railway.app/',
+        tags: ['Railway', 'Chatterbox', 'Modal'],
+        year: '2026',
+        link: 'https://tts-twelve-production.up.railway.app/'
       },
       {
         id: 5,
@@ -939,7 +939,7 @@
           <div class="card-spotlight"></div>
           ${project.badge ? `<span class="card-badge">${project.badge}</span>` : ''}
           <div class="card-image-wrap">
-            ${project.link.includes('vercel.app') ?
+            ${(project.link.includes('vercel.app') || project.link.includes('railway.app')) ?
               `<iframe src="${project.link}" class="card-image" style="pointer-events:none;border:none;" loading="lazy"></iframe>` :
               `<img class="card-image" src="${project.image}" alt="${project.title}" loading="lazy">`
             }
